@@ -1,5 +1,5 @@
 /* CSS declarations go here */
-body {
+/*body {
   font-family: sans-serif;
   background-color: #488131;
   background-image: linear-gradient(to bottom, #315481, #918e82 100%);
@@ -15,63 +15,62 @@ body {
   margin: 0;
 
   font-size: 14px;
-}
+}*/
 .login-display-name{color: white }
 .login-button{background-color: white}
  #main {
     padding-top:20px;
 }
 
-.container {
+/*.container {
   max-width: 600px;
   margin: 0 auto;
   min-height: 100%;
   background: white;
-}
+}*/
 
-header {
+/*header {
   background: #d2edf4;
   background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);
   padding: 20px 15px 15px 15px;
   position: relative;
-}
+}*/
 
 #login-buttons {
   display: block;
 }
-
+/*
 h1 {
   font-size: 1.5em;
   margin: 0;
   margin-bottom: 10px;
   display: inline-block;
   margin-right: 1em;
-}
+}*/
 
-form {
+/*form {
   margin-top: 10px;
   margin-bottom: -10px;
   position: relative;
-}
-
-.new-task input {
+}*/
+/*
+.new-event input {
   box-sizing: border-box;
   padding: 10px 0;
   background: transparent;
   border: none;
-  width: 100%;
   padding-right: 80px;
   font-size: 1em;
-}
-
-.new-task input:focus{
+}*/
+/*
+.new-event input:focus{
   outline: 0;
-}
+}*/
 
 ul {
   margin: 0;
   padding: 0;
-  background: white;
+  /*background: white;*/
 }
 
 .delete {
@@ -83,23 +82,28 @@ ul {
   position: relative;
 }
 
+
 li {
   position: relative;
   list-style: none;
   padding: 15px;
-  border-bottom: #eee solid 1px;
+  /*border-bottom: #eee solid 1px;*/
 }
 
-li .text {
+span .title {
   margin-left: 10px;
 }
 
-li.checked {
+span .checked {
   color: #888;
 }
 
-li.checked .text {
+span.checked.title {
   text-decoration: line-through;
+}
+
+span .thin {
+  border-width: 0px
 }
 
 li.private {
@@ -115,6 +119,16 @@ header .hide-completed {
   margin-left: 5px;
 }
 
+.username {
+  float: right;
+  font-style: italic;
+  font-size: small;
+}
+
+.event_text {
+  width:100%
+}
+/*
 @media (max-width: 600px) {
   li {
     padding: 12px 15px;
@@ -125,7 +139,7 @@ header .hide-completed {
     clear: both;
   }
 
-  .new-task input {
+  .new-event input {
     padding-bottom: 5px;
   }
-}
+}*/
