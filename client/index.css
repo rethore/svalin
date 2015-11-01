@@ -35,10 +35,10 @@
   padding: 20px 15px 15px 15px;
   position: relative;
 }*/
-
+/*
 #login-buttons {
   display: block;
-}
+}*/
 /*
 h1 {
   font-size: 1.5em;
@@ -67,11 +67,10 @@ h1 {
   outline: 0;
 }*/
 
-ul {
+/*ul {
   margin: 0;
   padding: 0;
-  /*background: white;*/
-}
+}*/
 
 .delete {
   float: right;
@@ -82,42 +81,46 @@ ul {
   position: relative;
 }
 
+img {
+  max-width: 50%;
+  align-self: center;
+}
 
-li {
+/*li {
   position: relative;
   list-style: none;
   padding: 15px;
-  /*border-bottom: #eee solid 1px;*/
-}
+  border-bottom: #eee solid 1px;
+}*/
 
-span .title {
+/*span .title {
   margin-left: 10px;
-}
+}*/
 
-span .checked {
+/*span .checked {
   color: #888;
-}
+}*/
 
-span.checked.title {
+/*span.checked.title {
   text-decoration: line-through;
-}
+}*/
 
-span .thin {
+/*span .thin {
   border-width: 0px
-}
+}*/
 
-li.private {
+/*li.private {
   background: #eee;
   border-color: #ddd;
-}
+}*/
 
-header .hide-completed {
+/*header .hide-completed {
   float: right;
-}
+}*/
 
-.toggle-private {
+/*.toggle-private {
   margin-left: 5px;
-}
+}*/
 
 .username {
   float: right;
@@ -125,9 +128,9 @@ header .hide-completed {
   font-size: small;
 }
 
-.event_text {
+/*.event_text {
   width:100%
-}
+}*/
 /*
 @media (max-width: 600px) {
   li {

@@ -1,0 +1,157 @@
+<head>
+  <title>SvalinCom</title>
+</head>
+
+<body>
+
+<div class="mdl-layout mdl-js-layout">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">
+        <form class="new-event form-inline" action="#">
+          <div class="mdl-textfield mdl-js-textfield">
+            <input class="mdl-textfield__input" name="event_title" type="text" id="sample1" />
+            <label class="mdl-textfield__label" for="sample1">NEW COMMUNICATION</label>
+          </div>
+          <button id="menu-speed" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--icon">
+            <i class="fa {{icon "discussion"}}"></i>
+          </button>
+          <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect" for="menu-speed">
+            <li class="mdl-menu__item">Task</li>
+            <li class="mdl-menu__item"><i class="fa {{icon "discussion"}}"></i> Discussion</li>
+            <li class="mdl-menu__item">Proposal</li>
+            <li class="mdl-menu__item">Question</li>
+            <li class="mdl-menu__item">Opinion</li>
+          </ul>
+          <button class="btn submit mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect">
+            <i class="material-icons">add</i>
+          </button>
+         </form>
+      </span>
+      <!-- Add spacer, to align navigation to the right -->
+      <div class="mdl-layout-spacer"></div>
+      <!-- Navigation -->
+      <nav class="mdl-navigation">
+        <a class="mdl-navigation__link" href="">{{> loginButtons}}</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="mdl-layout__drawer">
+    <span class="mdl-layout-title">Title</span>
+    <nav class="mdl-navigation">
+      <a class="mdl-navigation__link" href="">{{> loginButtons}}</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+    </nav>
+  </div>
+      <main class="mdl-layout__content">
+      {{#if isDefault }}
+        <!-- List of all the tasks -->
+        <ul>
+          {{#each events}}
+            <li>
+            {{> listed_event}}
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <!-- Show the current object -->
+        {{#with current_object}}
+          {{> focussed_event}}
+        {{/with}}
+      {{/if}}
+    </main>
+    </div>
+</body>
+
+
+<!-- ------ TEMPLATES ------------------------------ -->
+
+<!-- The event Icon -->
+<template name="event_icon">
+  {{#if is_type "task" }}
+    <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+  {{else}}
+    <i class="fa {{icon type}}"></i>
+  {{/if}}
+</template>
+
+<!-- The listed event -->
+<template name="listed_event">
+  {{> event_icon }}
+  <span class="{{#if checked}}checked{{/if}} title">{{title}}</span>
+  <span class="thin username">{{user_name}}</span>
+</template>
+
+<!-- Show the current object -->
+<template name="focussed_event">
+  <div class="mdl-card mdl-shadow--4dp">
+  <div class="mdl-card__title">
+    <form class="thin edit-title">
+      <button class="btn backClick mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab  mdl-button--colored">
+        <i class="material-icons">navigate_before</i>
+      </button>
+
+      {{> event_icon }}
+      {{#if edit_mode }}
+          <input class="thin" type="text" name="event_title" value="{{title}}"/>
+      {{else}}
+        <span class="{{#if checked}}checked{{/if}} title">{{title}}</span>
+      {{/if}}
+      <button class="delete">&times;</button>
+      <span class="thin username">{{user_name}}</span>
+      </form>
+  </div>
+  <div class="mdl-card__supporting-text">
+    <div class="container">
+      <form class="thin edit-text">
+      {{#if edit_mode }}
+        <textarea class="form-control event_text" rows="10" name="event_text" value="{{text}}"></textarea>
+        <button class="btn submit">Save</button>
+      {{else}}
+        <span class="event_text">
+          {{#markdown}}{{text}}{{/markdown}}
+        </span>
+      {{/if}}
+      </form>
+    </div>
+  </div>
+  <div class="mdl-card__actions">
+     <a href="*">Related Action</a>
+   </div>
+</div>
+  {{#if is_type "opinion" }}
+    {{> embedded }}
+  {{/if}}
+</template>
+
+<template name="embedded">
+  <div class="mdl-card  mdl-shadow--4dp">
+  <div class="mdl-card__title">
+    Embedded document
+  </div>
+      {{#if edit_mode }}
+      <div class="mdl-card__supporting-text">
+        <form class="thin edit-embedded">
+          <input class="thin" type="text" name="event_embedded" value="{{embedded}}"/>
+          <button class="btn submit">Embed Google Form</button>
+        </form>
+      </div>
+      {{else}}
+      <div class="mdl-card__supporting-text">
+        <div class="mdl-card__actions">
+        <a href='*' class="btn btn-embedded">Embed Google Form</a>
+        </div>
+        <div class="mdl-card__supporting-text">
+        <iframe src="{{embedded}}?embedded=true" width="760" height="500" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+        </div>
+      </div>
+      {{/if}}
+  </div>
+</template>

@@ -1,9 +1,8 @@
 Events = new Mongo.Collection("events");
+Relationships = new Mongo.Collection("relationships")
 
-var CURRENT_TYPE = 'current_type';
 var CURRENT_OBJ = 'current_obj';
-var EDIT_TITLE = 'edit_title';
-var EDIT_TEXT = 'edit_text';
+var EDIT_MODE = 'edit_mode';
 var ICONS = {
   discussion: 'fa-comments-o',
   opinion: 'fa-star-half-empty',
@@ -12,14 +11,15 @@ var ICONS = {
 };
 
 if (Meteor.isClient) {
-    Session.setDefault(CURRENT_TYPE, '');
-    Session.setDefault(CURRENT_OBJ, {});
-    Session.setDefault(EDIT_TITLE, false);
-    Session.setDefault(EDIT_TEXT, false);
-
   // This code only runs on the client
-  // Template.body.helpers({
-  // });
+    Session.setDefault(CURRENT_OBJ, null);
+    Session.setDefault(EDIT_MODE, null);
+
+  Meteor.subscribe("events");
+
+  function getEvent(_id) {
+    return Events.findOne({_id:_id})
+  }
 
   Template.body.helpers({
     events: function () {return Events.find({}, {sort: {createdAt: -1}})},
@@ -43,42 +43,53 @@ if (Meteor.isClient) {
         text: '',
       });
 
+
+
       // Clear form
       event.target.event_title.value = "";
-      console.log(id);
+      obj = getEvent(id);
 
-      obj = Events.findOne({_id:id});
-      console.log(obj);
-      Session.set(CURRENT_OBJ, obj);
-      Session.set(CURRENT_TYPE, obj.type);
-      Session.set(EDIT_TEXT, true);
+      if Session.Session.equals(CURRENT_OBJ, null) {
+        // This is a new topic on the front page. It hasn't any relationship yet
+        Session.set(CURRENT_OBJ, obj);
+        Session.set(EDIT_MODE, id);
+      } else {
+        // There is a context, so we will automatically add a relationship
+        context = Session.get(CURRENT_OBJ);
+
+        Relationships.Collection.insert({
+          parent: context._id,
+          child: id,
+          createdAt: new Date(),
+          type: 'context',
+          user: Meteor.Meteor.userId(),
+        });
+        Session.set(EDIT_MODE, id);
+      }
     }
   });
 
 
   // Default helpers available to all templates
   UI.registerHelper('isDefault', function () {
-    return Session.equals(CURRENT_TYPE, '')});
+    return Session.equals(CURRENT_OBJ, null)});
   UI.registerHelper('current_type', function () {
-    return Session.get(CURRENT_TYPE)});
+    return Session.get(CURRENT_OBJ).type});
   UI.registerHelper('current_object', function () {
     return Session.get(CURRENT_OBJ)});
-  UI.registerHelper('log', function () {
-    console.log(this);
-    return null;
-  });
+  UI.registerHelper('log', function () {console.log(this)});
 
 
-  Template.listed_event.helpers({
-    user_name: function () {
-        var user = Meteor.users.findOne({'_id': this.user})
+  UI.registerHelper('is_type', function(event_type) {return this.type === event_type});
+  UI.registerHelper('is_active', function(edit_obj) {return Session.equals(edit_obj, true)});
+  UI.registerHelper('icon', function (event_type) {return ICONS[event_type]});
+  UI.registerHelper('event', function (event_id) {return getEvent(event_it)});
+
+  UI.registerHelper("user_name", function () {
+        var user = Meteor.users.findOne({'  _id': this.user})
         if (! user)     return null;
         else            return user.profile.name;
-    },
-    icon: function () {return ICONS[this.type]},
-    isTask: function () {return this.type === 'task'},
-
-  });
+    });
 
   Template.listed_event.events({
       "click .toggle-checked": function () {
@@ -89,7 +100,6 @@ if (Meteor.isClient) {
       },
       "click .title, click .fa": function (event) {
           Session.set(CURRENT_OBJ, this);
-          Session.set(CURRENT_TYPE, this.type);
       },
       "focus .title": function (event) {
         Session(SHOW_TEXT, true);
@@ -98,46 +108,27 @@ if (Meteor.isClient) {
 
 
   Template.focussed_event.helpers({
-    user_name: function () {
-        var user = Meteor.users.findOne({'_id': this.user})
-        if (! user)     return null;
-        else            return user.profile.name;
-    },
-    icon: function () {return ICONS[this.type]},
-    isTask: function () {return this.type === 'task'},
-    edit_title: function () {return Session.get(EDIT_TITLE)},
-    edit_text: function () {
-      return Session.get(EDIT_TEXT) | this.text === ''
-    },
-  });
+    edit_mode: function () {return Session.equals(EDIT_MODE, this._id)}
+    });
 
 
   Template.focussed_event.events({
     "click .toggle-checked": function () {
       // Set the checked property to the opposite of its current value
-      Events.update(this._id, {
-        $set: {checked: ! this.checked}
-      });
+      Events.update(this._id, {$set: {checked: ! this.checked}});
       this.checked = ! this.checked
       Session.set(CURRENT_OBJ, this)
     },
-    "click .title": function (event) {
-      Session.set(EDIT_TITLE, true);
-    },
-    "click span.event_text": function (event) {
-      Session.set(EDIT_TEXT, true);
+    "click .title, click span.event_text, click .btn-embedded": function (event) {
+      Session.set(EDIT_MODE, this._id);
     },
     "click .backClick": function(event) {
-      Session.set(CURRENT_OBJ, {});
-      Session.set(CURRENT_TYPE, '');
-      Session.set(EDIT_TEXT, false);
-      Session.set(EDIT_TITLE, false);
-      console.log('backClick');
+      Session.set(CURRENT_OBJ, null);
+      Session.set(EDIT_MODE, null);
     },
     "click .delete": function () {
       Events.remove(this._id);
-      Session.set(CURRENT_OBJ, {});
-      Session.set(CURRENT_TYPE, '');
+      Session.set(CURRENT_OBJ, null);
     },
     "submit .edit-title": function (event) {
       // Prevent default browser form submit
@@ -154,8 +145,7 @@ if (Meteor.isClient) {
       // Update the view
       this.title=title;
       Session.set(CURRENT_OBJ, this);
-      Session.set(CURRENT_TYPE, this.type);
-      Session.set(EDIT_TITLE, false);
+      Session.set(EDIT_MODE, null);
     },
     "submit .edit-text": function (event) {
       // Prevent default browser form submit
@@ -172,8 +162,24 @@ if (Meteor.isClient) {
       // Update the view
       this.text=text;
       Session.set(CURRENT_OBJ, this);
-      Session.set(CURRENT_TYPE, this.type);
-      Session.set(EDIT_TEXT, false);
+      Session.set(EDIT_MODE, null);
+    },
+    "submit .edit-embedded, ": function (event) {
+      // Prevent default browser form submit
+      event.preventDefault();
+
+      // Get value from form element
+      var embedded = event.target.event_embedded.value;
+
+      // Update the event title
+      Events.update(this._id, {
+        $set: {embedded: embedded}
+      });
+
+      // Update the view
+      this.embedded=embedded;
+      Session.set(CURRENT_OBJ, this);
+      Session.set(EDIT_MODE, null);
     }
   });
 }
@@ -181,5 +187,9 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+  });
+
+  Meteor.publish("events", function () {
+    return Events.find();
   });
 }

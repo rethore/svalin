@@ -48,26 +48,31 @@
     </div>
 </body>
 
-<template name="listed_event">
-  {{#if isTask }}
+
+<!-- ------ TEMPLATES ------------------------------ -->
+
+<!-- The event Icon -->
+<template name="event_icon">
+  {{#if is_type "task" }}
     <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
   {{else}}
-    <i class="fa {{icon}}"></i>
+    <i class="fa {{icon type}}"></i>
   {{/if}}
+</template>
+
+<!-- The listed event -->
+<template name="listed_event">
+  {{> event_icon }}
   <span class="{{#if checked}}checked{{/if}} title">{{title}}</span>
-  <button class="delete">&times;</button>
   <span class="thin username">{{user_name}}</span>
 </template>
 
+<!-- Show the current object -->
 <template name="focussed_event">
   <form class="thin edit-title">
   <button class="btn btn-default backClick"><i class="fa fa-arrow-left"></i></button>
-  {{#if isTask }}
-    <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
-  {{else}}
-    <i class="fa {{icon}}"></i>
-  {{/if}}
-  {{#if edit_title }}
+  {{> event_icon }}
+  {{#if edit_mode }}
       <input class="thin" type="text" name="event_title" value="{{title}}"/>
   {{else}}
     <span class="{{#if checked}}checked{{/if}} title">{{title}}</span>
@@ -77,7 +82,7 @@
   </form>
   <div class="container">
     <form class="thin edit-text">
-    {{#if edit_text}}
+    {{#if edit_mode }}
       <textarea class="form-control event_text" rows="10" name="event_text" value="{{text}}"></textarea>
       <button class="btn submit">Save</button>
     {{else}}
@@ -87,5 +92,23 @@
     {{/if}}
     </form>
   </div>
+  {{#if is_type "opinion" }}
+    {{> embedded }}
+  {{/if}}
+</template>
 
+<template name="embedded">
+    <div class="container">
+      {{#if edit_mode }}
+        <form class="thin edit-embedded">
+          <input class="thin" type="text" name="event_embedded" value="{{embedded}}"/>
+          <button class="btn submit">Embed Google Form</button>
+        </form>
+      {{else}}
+        <div class="container">
+        <button class="btn btn-embedded">Embed Google Form</button>
+        </div>
+        <iframe src="{{embedded}}?embedded=true" width="760" height="500" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+      {{/if}}
+  </div>
 </template>
