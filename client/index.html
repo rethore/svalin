@@ -3,59 +3,13 @@
 </head>
 
 <body>
-
-<div class="mdl-layout mdl-js-layout">
-  <header class="mdl-layout__header">
-    <div class="mdl-layout__header-row">
-      <!-- Title -->
-      <span class="mdl-layout-title">
-        <form class="new-event form-inline" action="#">
-          <div class="mdl-textfield mdl-js-textfield">
-            <input class="mdl-textfield__input" name="event_title" type="text" id="sample1" />
-            <label class="mdl-textfield__label" for="sample1">NEW COMMUNICATION</label>
-          </div>
-          <button id="menu-speed" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--icon">
-            <i class="fa {{icon "discussion"}}"></i>
-          </button>
-          <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect" for="menu-speed">
-            <li class="mdl-menu__item">Task</li>
-            <li class="mdl-menu__item"><i class="fa {{icon "discussion"}}"></i> Discussion</li>
-            <li class="mdl-menu__item">Proposal</li>
-            <li class="mdl-menu__item">Question</li>
-            <li class="mdl-menu__item">Opinion</li>
-          </ul>
-          <button class="btn submit mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect">
-            <i class="material-icons">add</i>
-          </button>
-         </form>
-      </span>
-      <!-- Add spacer, to align navigation to the right -->
-      <div class="mdl-layout-spacer"></div>
-      <!-- Navigation -->
-      <nav class="mdl-navigation">
-        <a class="mdl-navigation__link" href="">{{> loginButtons}}</a>
-        <a class="mdl-navigation__link" href="">Link</a>
-        <a class="mdl-navigation__link" href="">Link</a>
-        <a class="mdl-navigation__link" href="">Link</a>
-      </nav>
-    </div>
-  </header>
-
-  <div class="mdl-layout__drawer">
-    <span class="mdl-layout-title">Title</span>
-    <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" href="">{{> loginButtons}}</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-    </nav>
-  </div>
-      <main class="mdl-layout__content">
+  {{>navbar}}
+  <div class="container">
       {{#if isDefault }}
         <!-- List of all the tasks -->
         <ul>
           {{#each events}}
-            <li>
+            <li style='list-style: none'>
             {{> listed_event}}
             </li>
           {{/each}}
@@ -66,19 +20,45 @@
           {{> focussed_event}}
         {{/with}}
       {{/if}}
-    </main>
-    </div>
+  </div>
 </body>
 
 
 <!-- ------ TEMPLATES ------------------------------ -->
+
+<template name="navbar">
+  <div class="navbar navbar-default">
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+      <div class="navbar-header">
+        <span class="navbar-brand">SVALINCOM</span>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+              {{#with current_event_type}}
+                <a href="#" data-target="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa {{icon}}"></i> {{name}}<b class="caret"></b></a>
+              {{/with}}
+              <ul class="dropdown-menu">
+                {{#each event_types}}
+                  <li><a href="#" class="click-event-type"><i class="fa {{icon}}"></i> {{name}}</a></li>
+                {{/each}}
+              </ul>
+          </li>
+        </ul>
+        <form class="new-event navbar-form navbar-left">
+            <input type="text" placeholder="New topic" name="text" class="form-control">
+        </form>
+      </div>
+  </div>
+  </div>
+</template>
 
 <!-- The event Icon -->
 <template name="event_icon">
   {{#if is_type "task" }}
     <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
   {{else}}
-    <i class="fa {{icon type}}"></i>
+    <i class="fa {{find_icon type}}"></i>
   {{/if}}
 </template>
 
@@ -91,10 +71,12 @@
 
 <!-- Show the current object -->
 <template name="focussed_event">
-  <div class="mdl-card mdl-shadow--4dp">
-  <div class="mdl-card__title">
+  <div class="row">
+    <div class="col s12 m6">
+      <div class="card blue-grey darken-1">
+        <div class="card-content white-text">
     <form class="thin edit-title">
-      <button class="btn backClick mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab  mdl-button--colored">
+      <button class="btn backClick">
         <i class="material-icons">navigate_before</i>
       </button>
 
@@ -107,10 +89,8 @@
       <button class="delete">&times;</button>
       <span class="thin username">{{user_name}}</span>
       </form>
-  </div>
-  <div class="mdl-card__supporting-text">
-    <div class="container">
-      <form class="thin edit-text">
+
+          <form class="thin edit-text">
       {{#if edit_mode }}
         <textarea class="form-control event_text" rows="10" name="event_text" value="{{text}}"></textarea>
         <button class="btn submit">Save</button>
@@ -122,12 +102,13 @@
       </form>
     </div>
   </div>
-  <div class="mdl-card__actions">
+  <div class="card-action">
      <a href="*">Related Action</a>
    </div>
+ </div>
 </div>
   {{#if is_type "opinion" }}
-    {{> embedded }}
+    <!-- {{> embedded }} -->
   {{/if}}
 </template>
 

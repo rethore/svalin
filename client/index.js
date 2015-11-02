@@ -1,8 +1,6 @@
 Events = new Mongo.Collection("events");
 Relationships = new Mongo.Collection("relationships")
 
-MDl.envConfig['blazeFix'] === true
-
 var CURRENT_OBJ = 'current_obj';
 var EDIT_MODE = 'edit_mode';
 var ICONS = {
@@ -12,26 +10,27 @@ var ICONS = {
   question: 'fa-question-circle',
 };
 
-var EVENT_TYPES = {
-  task: {
+var EVENT_TYPES = [
+  { type: 'task',
     name: 'Task',
-    icon: 'fa-todo-o'},
-  discussion: {
+    icon: 'fa-check-square-o'},
+  { type: 'discussion',
     name: 'Discussion',
     icon: 'fa-comments-o'},
-  opinion: {
+  { type: 'opinion',
     name: 'Opinion',
     icon: 'fa-star-half-empty'},
-  proposal: {
+  { type: 'proposal',
      name: 'Proposal',
     icon: 'fa-gavel'},
-  question: {
+  { type: 'question',
     name: 'Question',
     icon: 'fa-question-circle'},
-};
+];
 
 Session.setDefault(CURRENT_OBJ, null);
 Session.setDefault(EDIT_MODE, null);
+Session.setDefault('current_event_type', EVENT_TYPES[0]);
 
 Meteor.subscribe("events");
 
@@ -43,20 +42,37 @@ Template.body.helpers({
 events: function () {return Events.find({}, {sort: {createdAt: -1}})},
 });
 
-Template.body.events({
+Template.navbar.helpers({
+  event_types: function() {return EVENT_TYPES},
+  current_event_type: function() {return Session.get('current_event_type')},
+});
+
+Template.navbar.events({
+"click .click-event-type": function (event) {
+  console.log({
+    type: this.type,
+    icon: this.icon,
+    name: this.name
+  });
+  Session.set('current_event_type', {
+    type: this.type,
+    icon: this.icon,
+    name: this.name
+  });
+},
 "submit .new-event": function (event) {
   // Prevent default browser form submit
   event.preventDefault();
 
   // Get value from form element
-  var title = event.target.event_title.value;
+  var title = event.target.text.value;
 
   // Insert a task into the collection
   id = Events.insert({
     title: title,
     createdAt: new Date(), // current time
     user: Meteor.userId(),
-    type: event.target.event_type.value,
+    type: Session.get('current_event_type').type,
     saved: false,
     text: '',
   });
@@ -64,7 +80,7 @@ Template.body.events({
 
 
   // Clear form
-  event.target.event_title.value = "";
+  event.target.text.value = "";
   // var obj = getEvent(id);
   var obj = Events.findOne({_id:_id});
 
@@ -101,7 +117,7 @@ UI.registerHelper('log', function () {console.log(this)});
 
 UI.registerHelper('is_type', function(event_type) {return this.type === event_type});
 UI.registerHelper('is_active', function(edit_obj) {return Session.equals(edit_obj, true)});
-UI.registerHelper('icon', function (event_type) {return ICONS[event_type]});
+UI.registerHelper('find_icon', function (event_type) {return ICONS[event_type]});
 UI.registerHelper('event', function (event_id) {return getEvent(event_it)});
 
 UI.registerHelper("user_name", function () {
