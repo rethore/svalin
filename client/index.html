@@ -4,9 +4,11 @@
 
 <body>
   {{>navbar}}
-  <div class="container">
+
       {{#if isDefault }}
         <!-- List of all the tasks -->
+        <div class="panel panel-default">
+          <div class="panel-body">
         <ul>
           {{#each events}}
             <li style='list-style: none'>
@@ -14,13 +16,14 @@
             </li>
           {{/each}}
         </ul>
+      </div>
+    </div>
       {{else}}
         <!-- Show the current object -->
         {{#with current_object}}
           {{> focussed_event}}
         {{/with}}
       {{/if}}
-  </div>
 </body>
 
 
@@ -71,42 +74,38 @@
 
 <!-- Show the current object -->
 <template name="focussed_event">
-  <div class="row">
-    <div class="col s12 m6">
-      <div class="card blue-grey darken-1">
-        <div class="card-content white-text">
-    <form class="thin edit-title">
-      <button class="btn backClick">
-        <i class="material-icons">navigate_before</i>
-      </button>
+  <div class="panel panel-default">
+      <div class="panel-heading">
 
-      {{> event_icon }}
-      {{#if edit_mode }}
-          <input class="thin" type="text" name="event_title" value="{{title}}"/>
-      {{else}}
-        <span class="{{#if checked}}checked{{/if}} title">{{title}}</span>
-      {{/if}}
-      <button class="delete">&times;</button>
-      <span class="thin username">{{user_name}}</span>
-      </form>
+        <form class="thin edit-title">
+          <h1 class="panel-title">
+          <a href="javascript:void(0)" class="btn backClick btn-primary btn-fab btn-raised  btn-xs mdi-hardware-keyboard-backspace"></a>
+        {{> event_icon }}
+        {{#if edit_mode }}
+            <input class="thin" type="text" name="event_title" value="{{title}}"/>
+        {{else}}
+          <span class="{{#if checked}}checked{{/if}} title">{{title}}</span>
+        {{/if}}
+        <button class="delete">&times;</button>
+        <span class="thin username">{{user_name}}</span>
+      </h1>
+        </form>
 
-          <form class="thin edit-text">
-      {{#if edit_mode }}
+      </div>
+      <div class="panel-body">
+        <form class="thin edit-text">
+        {{#if edit_mode }}
         <textarea class="form-control event_text" rows="10" name="event_text" value="{{text}}"></textarea>
         <button class="btn submit">Save</button>
-      {{else}}
+        {{else}}
         <span class="event_text">
-          {{#markdown}}{{text}}{{/markdown}}
+        {{#markdown}}{{text}}{{/markdown}}
         </span>
-      {{/if}}
-      </form>
-    </div>
+        {{/if}}
+        </form>
+      </div>
+      <div class="panel-footer">Panel footer</div>
   </div>
-  <div class="card-action">
-     <a href="*">Related Action</a>
-   </div>
- </div>
-</div>
   {{#if is_type "opinion" }}
     <!-- {{> embedded }} -->
   {{/if}}
