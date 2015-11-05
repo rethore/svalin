@@ -28,6 +28,41 @@ var EVENT_TYPES = [
     icon: 'fa-question-circle'},
 ];
 
+Template.d3t.rendered = function () {
+
+  var sampleSVG = d3.select("#viz")
+      .append("svg")
+      .attr("width", 100)
+      .attr("height", 100);
+
+  sampleSVG.append("circle")
+      .style("stroke", "gray")
+      .style("fill", "white")
+      .attr("r", 40)
+      .attr("cx", 50)
+      .attr("cy", 50)
+      .on("mouseover", function(){d3.select(this).style("fill", "aliceblue");})
+      .on("mouseout", function(){d3.select(this).style("fill", "white");})
+      .on("mousedown", animateFirstStep);
+
+  function animateFirstStep(){
+      d3.select(this)
+        .transition()
+          .delay(0)
+          .duration(1000)
+          .attr("r", 10)
+          .each("end", animateSecondStep);
+  };
+
+  function animateSecondStep(){
+      d3.select(this)
+        .transition()
+          .duration(1000)
+          .attr("r", 40);
+  };
+
+}
+
 Session.setDefault(CURRENT_OBJ, null);
 Session.setDefault(EDIT_MODE, null);
 Session.setDefault('current_event_type', EVENT_TYPES[0]);

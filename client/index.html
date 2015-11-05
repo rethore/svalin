@@ -3,8 +3,11 @@
 </head>
 
 <body>
+
+
   {{>navbar}}
 
+  <div class="container">
       {{#if isDefault }}
         <!-- List of all the tasks -->
         <div class="panel panel-default">
@@ -21,13 +24,24 @@
       {{else}}
         <!-- Show the current object -->
         {{#with current_object}}
-          {{> focussed_event}}
+          {{> focussed_event }}
         {{/with}}
       {{/if}}
+
+    {{> d3t }}
+  </div>
 </body>
 
 
 <!-- ------ TEMPLATES ------------------------------ -->
+
+<template name="d3t">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div id="viz"></div>
+    </div>
+  </div>
+</template>
 
 <template name="navbar">
   <div class="navbar navbar-default">
@@ -79,7 +93,7 @@
 
         <form class="thin edit-title">
           <h1 class="panel-title">
-          <a href="javascript:void(0)" class="btn backClick btn-primary btn-fab btn-raised  btn-xs mdi-hardware-keyboard-backspace"></a>
+          <a href="javascript:void(0)" class="btn backClick btn-primary btn-fab btn-fab-mini btn-raised  btn-xs mdi-hardware-keyboard-backspace"></a>
         {{> event_icon }}
         {{#if edit_mode }}
             <input class="thin" type="text" name="event_title" value="{{title}}"/>
