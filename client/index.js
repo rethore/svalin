@@ -38,12 +38,22 @@ Template.d3t.rendered = function () {
   sampleSVG.append("circle")
       .style("stroke", "gray")
       .style("fill", "white")
-      .attr("r", 40)
+      .attr("r", 20)
       .attr("cx", 50)
       .attr("cy", 50)
       .on("mouseover", function(){d3.select(this).style("fill", "aliceblue");})
       .on("mouseout", function(){d3.select(this).style("fill", "white");})
       .on("mousedown", animateFirstStep);
+
+
+  // sampleSVG.append("polygon")
+  //     .style("fill", "yellow")
+  //     .style("stroke","blue")
+  //     .style("stroke-width", 2)
+  //     .attr("points","05,30
+  //                     15,10
+  //                     25,30")
+
 
   function animateFirstStep(){
       d3.select(this)
@@ -58,7 +68,7 @@ Template.d3t.rendered = function () {
       d3.select(this)
         .transition()
           .duration(1000)
-          .attr("r", 40);
+          .attr("r", 50);
   };
 
 }
@@ -69,26 +79,19 @@ Session.setDefault('current_event_type', EVENT_TYPES[0]);
 
 Meteor.subscribe("events");
 
-function getEvent(_id) {
-return Events.findOne({_id:_id})
-};
+let getEvent = (_id) => Events.findOne({_id:_id});
 
 Template.body.helpers({
-events: function () {return Events.find({}, {sort: {createdAt: -1}})},
+  events: () => Events.find({}, {sort: {createdAt: -1}}),
 });
 
 Template.navbar.helpers({
-  event_types: function() {return EVENT_TYPES},
-  current_event_type: function() {return Session.get('current_event_type')},
+  event_types: () => EVENT_TYPES,
+  current_event_type: () => Session.get('current_event_type'),
 });
 
 Template.navbar.events({
-"click .click-event-type": function (event) {
-  console.log({
-    type: this.type,
-    icon: this.icon,
-    name: this.name
-  });
+"click .click-event-type": function() {
   Session.set('current_event_type', {
     type: this.type,
     icon: this.icon,
@@ -111,8 +114,6 @@ Template.navbar.events({
     saved: false,
     text: '',
   });
-
-
 
   // Clear form
   event.target.text.value = "";
@@ -141,20 +142,15 @@ Template.navbar.events({
 
 
 // Default helpers available to all templates
-UI.registerHelper('isDefault', function () {
-return Session.equals(CURRENT_OBJ, null)});
-UI.registerHelper('current_type', function () {
-return Session.get(CURRENT_OBJ).type});
-UI.registerHelper('current_object', function () {
-return Session.get(CURRENT_OBJ)});
-UI.registerHelper('log', function () {console.log(this)});
+UI.registerHelper('isDefault', () => Session.equals(CURRENT_OBJ, null));
+UI.registerHelper('current_type',  () => Session.get(CURRENT_OBJ).type);
+UI.registerHelper('current_object', () => Session.get(CURRENT_OBJ));
+UI.registerHelper('is_active', edit_obj => Session.equals(edit_obj, true));
+UI.registerHelper('find_icon', event_type => ICONS[event_type]);
+UI.registerHelper('event', event_id => getEvent(event_it));
 
-
-UI.registerHelper('is_type', function(event_type) {return this.type === event_type});
-UI.registerHelper('is_active', function(edit_obj) {return Session.equals(edit_obj, true)});
-UI.registerHelper('find_icon', function (event_type) {return ICONS[event_type]});
-UI.registerHelper('event', function (event_id) {return getEvent(event_it)});
-
+UI.registerHelper('log', function() {console.log(this)});
+UI.registerHelper('is_type', function(event_type) {return (this.type === event_type)});
 UI.registerHelper("user_name", function () {
     var user = Meteor.users.findOne({'  _id': this.user})
     if (! user)     return null;
@@ -178,7 +174,7 @@ Template.listed_event.events({
 
 
 Template.focussed_event.helpers({
-edit_mode: function () {return Session.equals(EDIT_MODE, this._id)}
+  edit_mode() {return Session.equals(EDIT_MODE, this._id)}
 });
 
 
@@ -189,9 +185,8 @@ Template.focussed_event.events({
   this.checked = ! this.checked
   Session.set(CURRENT_OBJ, this)
 },
-"click .title, click span.event_text, click .btn-embedded": function (event) {
-  Session.set(EDIT_MODE, this._id);
-},
+"click .title, click span.event_text, click .btn-embedded": function(event){
+  Session.set(EDIT_MODE, this._id)},
 "click .backClick": function(event) {
   Session.set(CURRENT_OBJ, null);
   Session.set(EDIT_MODE, null);
@@ -205,7 +200,7 @@ Template.focussed_event.events({
   event.preventDefault();
 
   // Get value from form element
-  var title = event.target.event_title.value;
+  let title = event.target.event_title.value;
 
   // Update the event title
   Events.update(this._id, {
@@ -222,7 +217,7 @@ Template.focussed_event.events({
   event.preventDefault();
 
   // Get value from form element
-  var text = event.target.event_text.value;
+  let text = event.target.event_text.value;
 
   // Update the event title
   Events.update(this._id, {
@@ -234,12 +229,12 @@ Template.focussed_event.events({
   Session.set(CURRENT_OBJ, this);
   Session.set(EDIT_MODE, null);
 },
-"submit .edit-embedded, ": function (event) {
+"submit .edit-embedded": function (event) {
   // Prevent default browser form submit
   event.preventDefault();
 
   // Get value from form element
-  var embedded = event.target.event_embedded.value;
+  let embedded = event.target.event_embedded.value;
 
   // Update the event title
   Events.update(this._id, {
